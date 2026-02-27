@@ -1,0 +1,66 @@
+export type TaskStatus = "pending" | "in-progress" | "blocked" | "done" | "not started";
+
+export type TaskType = "BACK" | "FRONT" | "BOTH" | "EXT" | "TEST" | "FRONT/INFRA";
+
+export type Priority = "high" | "medium" | "low" | "quick-fix" | "intern" | "completed";
+
+export interface BacklogTask {
+  id: string;
+  title: string;
+  type: TaskType | string;
+  status: TaskStatus | string;
+  owner: string;
+  specLink: string;
+  priority: Priority;
+  completed?: string; // date for completed tasks
+}
+
+export interface SpecFile {
+  id: string;
+  filename: string;
+  content: string;
+  htmlContent: string;
+  metadata: {
+    title: string;
+    priority: string;
+    type: string;
+    projects: string;
+  };
+  checkboxes: {
+    total: number;
+    checked: number;
+  };
+}
+
+export interface ProgressFile {
+  id: string;
+  filename: string;
+  content: string;
+  htmlContent: string;
+  sessions: ProgressSession[];
+}
+
+export interface ProgressSession {
+  date: string;
+  title: string;
+  status: string;
+  content: string;
+}
+
+export interface ReportFile {
+  filename: string;
+  title: string;
+  size: number;
+  modified: string;
+}
+
+export interface ScreenshotFile {
+  filename: string;
+  url: string;
+  modified: string;
+}
+
+export interface ChatMessage {
+  role: "user" | "assistant";
+  content: string;
+}
