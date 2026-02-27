@@ -5,11 +5,13 @@ import Link from "next/link";
 import { useBacklog } from "@/hooks/useBacklog";
 import { useSpec } from "@/hooks/useSpec";
 import { useProgress } from "@/hooks/useProgress";
+import { useDelivery } from "@/hooks/useDelivery";
 import { Header } from "@/components/layout/Header";
 import { TaskHeader } from "@/components/task-detail/TaskHeader";
 import { SpecViewer } from "@/components/task-detail/SpecViewer";
 import { ProgressTimeline } from "@/components/task-detail/ProgressTimeline";
 import { ChecklistProgress } from "@/components/task-detail/ChecklistProgress";
+import { DeliveryPipeline } from "@/components/task-detail/DeliveryPipeline";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -24,9 +26,30 @@ export default function TaskDetailPage({
   const { tasks, loading: backlogLoading } = useBacklog();
   const { spec, loading: specLoading } = useSpec(id);
   const { progress, loading: progressLoading } = useProgress(id);
+  const { delivery, loading: deliveryLoading, updateStage } = useDelivery(id);
 
   const task = tasks.find((t) => t.id === id);
-  const loading = backlogLoading || specLoading || progressLoading;
+  const loading = backlogLoading || specLoading || progressLoading || deliveryLoading;
+
+  const handleApprove = async (notes: string) => {
+    const today = new Date().toISOString().split("T")[0];
+    await updateStage("User", "Approval", "Status", "done");
+    await updateStage("User", "Approval", "Date", today);
+    if (notes) {
+      await updateStage("User", "Approval", "Notes", notes);
+    }
+  };
+
+  const handleReject = async (notes: string) => {
+    const today = new Date().toISOString().split("T")[0];
+    await updateStage("User", "Approval", "Status", "blocked");
+    await updateStage("User", "Approval", "Date", today);
+    if (notes) {
+      await updateStage("User", "Approval", "Notes", notes);
+    }
+  };
+
+  const defaultTab = delivery ? "delivery" : "spec";
 
   return (
     <div className="p-4 md:p-6 space-y-6">
@@ -60,14 +83,30 @@ export default function TaskDetailPage({
             />
           )}
 
-          <Tabs defaultValue="spec" className="w-full">
+          <Tabs defaultValue={defaultTab} className="w-full">
             <TabsList>
+              {delivery && (
+                <TabsTrigger value="delivery">
+                  Delivery
+                  {` (${delivery.stages.filter((s) => s.status === "done").length}/${delivery.stages.length})`}
+                </TabsTrigger>
+              )}
               <TabsTrigger value="spec">Spec</TabsTrigger>
               <TabsTrigger value="progress">
                 Progress
                 {progress && ` (${progress.sessions.length})`}
               </TabsTrigger>
             </TabsList>
+
+            {delivery && (
+              <TabsContent value="delivery" className="mt-4">
+                <DeliveryPipeline
+                  stages={delivery.stages}
+                  onApprove={handleApprove}
+                  onReject={handleReject}
+                />
+              </TabsContent>
+            )}
 
             <TabsContent value="spec" className="mt-4">
               {spec ? (

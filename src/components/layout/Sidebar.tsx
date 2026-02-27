@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -8,6 +9,8 @@ import {
   MessageSquare,
   Moon,
   Sun,
+  PanelLeftClose,
+  PanelLeftOpen,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useTheme } from "@/components/layout/ThemeProvider";
@@ -22,14 +25,31 @@ const navItems = [
 export function Sidebar() {
   const pathname = usePathname();
   const { theme, toggleTheme } = useTheme();
+  const [collapsed, setCollapsed] = useState(false);
 
   return (
-    <aside className="group/sidebar hidden w-16 shrink-0 flex-col border-r bg-background transition-all duration-300 hover:w-60 md:flex">
-      <div className="flex h-14 items-center border-b px-4">
-        <span className="text-lg font-bold tracking-tight">B</span>
-        <span className="overflow-hidden whitespace-nowrap text-lg font-bold tracking-tight opacity-0 transition-opacity duration-300 group-hover/sidebar:opacity-100">
-          WATS
+    <aside
+      className={cn(
+        "hidden shrink-0 flex-col border-r bg-background transition-all duration-300 md:flex",
+        collapsed ? "w-16" : "w-60"
+      )}
+    >
+      <div className="flex h-14 items-center justify-between border-b px-4">
+        <span className="text-lg font-bold tracking-tight">
+          B{!collapsed && "WATS"}
         </span>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="size-8"
+          onClick={() => setCollapsed(!collapsed)}
+        >
+          {collapsed ? (
+            <PanelLeftOpen className="size-4" />
+          ) : (
+            <PanelLeftClose className="size-4" />
+          )}
+        </Button>
       </div>
       <nav className="flex flex-1 flex-col gap-1 p-2">
         {navItems.map((item) => {
@@ -49,9 +69,7 @@ export function Sidebar() {
               )}
             >
               <item.icon className="size-5 shrink-0" />
-              <span className="overflow-hidden whitespace-nowrap opacity-0 transition-opacity duration-300 group-hover/sidebar:opacity-100">
-                {item.label}
-              </span>
+              {!collapsed && <span>{item.label}</span>}
             </Link>
           );
         })}
@@ -68,9 +86,9 @@ export function Sidebar() {
           ) : (
             <Moon className="size-5 shrink-0" />
           )}
-          <span className="overflow-hidden whitespace-nowrap opacity-0 transition-opacity duration-300 group-hover/sidebar:opacity-100">
-            {theme === "dark" ? "Light mode" : "Dark mode"}
-          </span>
+          {!collapsed && (
+            <span>{theme === "dark" ? "Light mode" : "Dark mode"}</span>
+          )}
         </Button>
       </div>
     </aside>

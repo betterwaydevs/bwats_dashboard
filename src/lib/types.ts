@@ -64,3 +64,22 @@ export interface ChatMessage {
   role: "user" | "assistant";
   content: string;
 }
+
+export interface DeliveryStage {
+  role: string;
+  label: string;
+  status: string;
+  agent: string;
+  date: string;
+  notes: string;
+  commits: string[];
+  screenshots: string[];
+  report: string;
+}
+
+export interface DeliveryLog {
+  id: string;
+  filename: string;
+  stages: DeliveryStage[];
+  content: string;
+}
