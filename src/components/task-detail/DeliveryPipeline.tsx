@@ -19,6 +19,7 @@ import {
   ChevronRight,
   ExternalLink,
   Image as ImageIcon,
+  AlertTriangle,
 } from "lucide-react";
 import type { DeliveryStage } from "@/lib/types";
 
@@ -69,10 +70,64 @@ function StageDot({ status }: { status: string }) {
   return <span className={`size-2.5 rounded-full ${config.bg}`} />;
 }
 
+/** Detect gate violations for a stage given all stages in the pipeline. */
+function getGateViolations(
+  stage: DeliveryStage,
+  allStages: DeliveryStage[]
+): string[] {
+  if (stage.status !== "done") return [];
+
+  const warnings: string[] = [];
+  const isDone = (role: string, label?: string) =>
+    allStages.some(
+      (s) =>
+        s.role === role &&
+        (label ? s.label === label : true) &&
+        s.status === "done"
+    );
+  const allDevDone = allStages
+    .filter((s) => s.role === "DEV")
+    .every((s) => s.status === "done");
+
+  // Prerequisite checks based on stage dependency order
+  if (stage.role === "DEV") {
+    // All DEV stages require PM: Assignment
+    if (!isDone("PM", "Assignment")) {
+      warnings.push("Prerequisite not met: PM Assignment");
+    }
+  } else if (stage.role === "QA") {
+    // QA: Testing requires ALL DEV stages done
+    if (!allDevDone) {
+      warnings.push("Prerequisite not met: DEV stages incomplete");
+    }
+    // QA done with no screenshots
+    if (stage.screenshots.length === 0) {
+      warnings.push("Missing screenshots");
+    }
+  } else if (stage.role === "PO") {
+    // PO: Acceptance requires QA: Testing done
+    if (!isDone("QA", "Testing")) {
+      warnings.push("Prerequisite not met: QA Testing");
+    }
+    // PO done with no acceptance notes
+    if (!stage.notes) {
+      warnings.push("Missing acceptance notes");
+    }
+  } else if (stage.role === "User") {
+    // User: Approval requires PO: Acceptance done
+    if (!isDone("PO", "Acceptance")) {
+      warnings.push("Prerequisite not met: PO Acceptance");
+    }
+  }
+
+  return warnings;
+}
+
 interface StageCardProps {
   stage: DeliveryStage;
   isLast: boolean;
   isUserStage: boolean;
+  warnings: string[];
   onApprove?: (notes: string) => void;
   onReject?: (notes: string) => void;
 }
@@ -81,6 +136,7 @@ function StageCard({
   stage,
   isLast,
   isUserStage,
+  warnings,
   onApprove,
   onReject,
 }: StageCardProps) {
@@ -124,6 +180,20 @@ function StageCard({
             >
               {config.label}
             </Badge>
+            {warnings.length > 0 && (
+              <span className="flex items-center gap-1">
+                {warnings.map((w) => (
+                  <Badge
+                    key={w}
+                    variant="outline"
+                    className="border-amber-400/60 bg-amber-50 text-amber-700 text-[10px] dark:bg-amber-950/30 dark:text-amber-400 dark:border-amber-500/40"
+                  >
+                    <AlertTriangle className="mr-0.5 size-3" />
+                    {w}
+                  </Badge>
+                ))}
+              </span>
+            )}
             {stage.agent && (
               <span className="hidden text-xs text-muted-foreground sm:inline">
                 {stage.agent}
@@ -304,11 +374,56 @@ interface DeliveryPipelineProps {
   onReject?: (notes: string) => void;
 }
 
+function TopApprovalCard({
+  onApprove,
+  onReject,
+}: {
+  onApprove: (notes: string) => void;
+  onReject: (notes: string) => void;
+}) {
+  const [notes, setNotes] = useState("");
+
+  return (
+    <Card className="mb-4 border-primary/30 bg-primary/5">
+      <CardContent className="space-y-3 py-4 px-4">
+        <div className="flex items-center gap-2 text-sm font-semibold">
+          <Circle className="size-4 text-primary animate-pulse" />
+          This task is awaiting your approval
+        </div>
+        <Textarea
+          placeholder="Add notes (optional)..."
+          value={notes}
+          onChange={(e) => setNotes(e.target.value)}
+          rows={2}
+        />
+        <div className="flex gap-2">
+          <Button size="sm" onClick={() => onApprove(notes)}>
+            <CheckCircle2 className="mr-1.5 size-4" />
+            Approve
+          </Button>
+          <Button
+            size="sm"
+            variant="destructive"
+            onClick={() => onReject(notes)}
+          >
+            <XCircle className="mr-1.5 size-4" />
+            Request Changes
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
 export function DeliveryPipeline({
   stages,
   onApprove,
   onReject,
 }: DeliveryPipelineProps) {
+  const pendingUserStage = stages.find(
+    (s) => s.role === "User" && s.status === "pending"
+  );
+
   if (stages.length === 0) {
     return (
       <p className="text-sm text-muted-foreground">
@@ -319,6 +434,11 @@ export function DeliveryPipeline({
 
   return (
     <div className="space-y-0">
+      {/* Top-level approval card when User stage is pending */}
+      {pendingUserStage && onApprove && onReject && (
+        <TopApprovalCard onApprove={onApprove} onReject={onReject} />
+      )}
+
       {/* Mini pipeline bar */}
       <div className="mb-4 flex items-center gap-1.5 overflow-x-auto pb-1">
         {stages.map((stage, i) => (
@@ -348,6 +468,7 @@ export function DeliveryPipeline({
             stage={stage}
             isLast={i === stages.length - 1}
             isUserStage={stage.role === "User"}
+            warnings={getGateViolations(stage, stages)}
             onApprove={onApprove}
             onReject={onReject}
           />
