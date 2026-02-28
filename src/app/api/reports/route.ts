@@ -29,6 +29,8 @@ export async function GET() {
       const files = fs.readdirSync(taskDir);
 
       for (const filename of files) {
+        // Only list HTML reports, not individual screenshots/assets
+        if (!filename.endsWith(".html")) continue;
         const filePath = path.join(taskDir, filename);
         const stat = fs.statSync(filePath);
         if (stat.isDirectory()) continue;

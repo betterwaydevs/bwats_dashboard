@@ -4,10 +4,10 @@ import { useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 
 interface ReportViewerProps {
-  filename: string;
+  path: string;
 }
 
-export function ReportViewer({ filename }: ReportViewerProps) {
+export function ReportViewer({ path }: ReportViewerProps) {
   const [isLoading, setIsLoading] = useState(true);
 
   return (
@@ -23,11 +23,11 @@ export function ReportViewer({ filename }: ReportViewerProps) {
         </div>
       )}
       <iframe
-        src={`/api/reports/${filename}`}
+        src={`/api/reports/${path}`}
         className="h-full w-full rounded-md border"
         sandbox="allow-same-origin allow-scripts"
         onLoad={() => setIsLoading(false)}
-        title={filename}
+        title={path}
       />
     </div>
   );

@@ -22,11 +22,12 @@ function formatBytes(bytes: number): string {
 
 export function ReportCard({ report }: ReportCardProps) {
   return (
-    <Link href={`/reports/${report.filename}`}>
+    <Link href={`/reports/${report.path}`}>
       <Card className="transition-colors hover:bg-accent/50">
         <CardHeader className="flex flex-row items-center gap-3 px-4 pb-2">
           <FileText className="size-8 shrink-0 text-muted-foreground" />
           <CardTitle className="text-sm leading-snug line-clamp-2">
+            <span className="text-muted-foreground">{report.taskId}</span>{" "}
             {report.title}
           </CardTitle>
         </CardHeader>
