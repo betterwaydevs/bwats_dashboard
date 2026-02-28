@@ -101,6 +101,7 @@ export default function TaskDetailPage({
             {delivery && (
               <TabsContent value="delivery" className="mt-4">
                 <DeliveryPipeline
+                  taskId={id}
                   stages={delivery.stages}
                   onApprove={handleApprove}
                   onReject={handleReject}

@@ -125,6 +125,7 @@ function getGateViolations(
 
 interface StageCardProps {
   stage: DeliveryStage;
+  taskId: string;
   isLast: boolean;
   isUserStage: boolean;
   warnings: string[];
@@ -134,6 +135,7 @@ interface StageCardProps {
 
 function StageCard({
   stage,
+  taskId,
   isLast,
   isUserStage,
   warnings,
@@ -283,7 +285,7 @@ function StageCard({
                   <div className="flex items-center gap-2">
                     <span className="font-medium text-muted-foreground">Report:</span>
                     <a
-                      href={`/api/reports/${stage.report}`}
+                      href={`/api/reports/${taskId}/${stage.report}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="inline-flex items-center gap-1 text-primary hover:underline"
@@ -369,6 +371,7 @@ function StageCard({
 }
 
 interface DeliveryPipelineProps {
+  taskId: string;
   stages: DeliveryStage[];
   onApprove?: (notes: string) => void;
   onReject?: (notes: string) => void;
@@ -416,6 +419,7 @@ function TopApprovalCard({
 }
 
 export function DeliveryPipeline({
+  taskId,
   stages,
   onApprove,
   onReject,
@@ -466,6 +470,7 @@ export function DeliveryPipeline({
           <StageCard
             key={`${stage.role}-${stage.label}`}
             stage={stage}
+            taskId={taskId}
             isLast={i === stages.length - 1}
             isUserStage={stage.role === "User"}
             warnings={getGateViolations(stage, stages)}

@@ -48,10 +48,12 @@ export interface ProgressSession {
 }
 
 export interface ReportFile {
+  taskId: string;
   filename: string;
   title: string;
   size: number;
   modified: string;
+  path: string;
 }
 
 export interface ScreenshotFile {

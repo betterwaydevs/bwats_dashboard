@@ -6,13 +6,7 @@ export const FEATURES_DIR =
 
 export const REPORTS_DIR =
   process.env.REPORTS_DIR ||
-  path.join(
-    process.cwd(),
-    "..",
-    "nearshore-talent-compass",
-    "tests",
-    "report"
-  );
+  path.join(process.cwd(), "..", "team", "features", "reports");
 
 export const SCREENSHOTS_DIR =
   process.env.SCREENSHOTS_DIR ||
