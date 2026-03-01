@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -11,6 +11,10 @@ import {
   Sun,
   PanelLeftClose,
   PanelLeftOpen,
+  Clock,
+  PackageCheck,
+  CheckCircle2,
+  Circle,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useTheme } from "@/components/layout/ThemeProvider";
@@ -22,8 +26,35 @@ const navItems = [
   { href: "/assistant", label: "Assistant", icon: MessageSquare },
 ];
 
+const dashboardSubItems = [
+  { href: "/?status=in-progress", status: "in-progress", label: "In Progress", icon: Clock },
+  { href: "/?status=dev-complete", status: "dev-complete", label: "Dev-Complete", icon: PackageCheck },
+  { href: "/?status=done", status: "done", label: "Completed", icon: CheckCircle2 },
+  { href: "/?status=pending", status: "pending", label: "Pending", icon: Circle },
+];
+
+/** Read current status filter from URL */
+function useStatusParam(pathname: string) {
+  const [status, setStatus] = useState<string | null>(null);
+
+  const sync = useCallback(() => {
+    const params = new URLSearchParams(window.location.search);
+    setStatus(pathname === "/" ? params.get("status") : null);
+  }, [pathname]);
+
+  useEffect(() => {
+    sync();
+    // Re-sync on back/forward navigation
+    window.addEventListener("popstate", sync);
+    return () => window.removeEventListener("popstate", sync);
+  }, [sync]);
+
+  return status;
+}
+
 export function Sidebar() {
   const pathname = usePathname();
+  const currentStatus = useStatusParam(pathname);
   const { theme, toggleTheme } = useTheme();
   const [collapsed, setCollapsed] = useState(false);
 
@@ -53,24 +84,51 @@ export function Sidebar() {
       </div>
       <nav className="flex flex-1 flex-col gap-1 p-2">
         {navItems.map((item) => {
-          const isActive =
-            pathname === item.href ||
-            (item.href !== "/" && pathname.startsWith(item.href));
+          const isDashboard = item.href === "/";
+          const isActive = isDashboard
+            ? pathname === "/" && !currentStatus
+            : pathname === item.href ||
+              (item.href !== "/" && pathname.startsWith(item.href));
 
           return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={cn(
-                "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
-                isActive
-                  ? "bg-primary/10 text-primary"
-                  : "text-muted-foreground hover:bg-accent hover:text-foreground"
+            <div key={item.href}>
+              <Link
+                href={item.href}
+                className={cn(
+                  "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                  isActive
+                    ? "bg-primary/10 text-primary"
+                    : "text-muted-foreground hover:bg-accent hover:text-foreground"
+                )}
+              >
+                <item.icon className="size-5 shrink-0" />
+                {!collapsed && <span>{item.label}</span>}
+              </Link>
+
+              {/* Dashboard sub-items */}
+              {isDashboard && !collapsed && (
+                <div className="ml-4 mt-0.5 flex flex-col gap-0.5">
+                  {dashboardSubItems.map((sub) => {
+                    const isSubActive = currentStatus === sub.status;
+                    return (
+                      <Link
+                        key={sub.status}
+                        href={sub.href}
+                        className={cn(
+                          "flex items-center gap-2.5 rounded-md px-3 py-1.5 text-xs font-medium transition-colors",
+                          isSubActive
+                            ? "bg-primary/10 text-primary"
+                            : "text-muted-foreground hover:bg-accent hover:text-foreground"
+                        )}
+                      >
+                        <sub.icon className="size-3.5 shrink-0" />
+                        <span>{sub.label}</span>
+                      </Link>
+                    );
+                  })}
+                </div>
               )}
-            >
-              <item.icon className="size-5 shrink-0" />
-              {!collapsed && <span>{item.label}</span>}
-            </Link>
+            </div>
           );
         })}
       </nav>

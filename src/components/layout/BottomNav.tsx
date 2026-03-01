@@ -6,8 +6,11 @@ import {
   LayoutDashboard,
   FileText,
   MessageSquare,
+  Moon,
+  Sun,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useTheme } from "@/components/layout/ThemeProvider";
 
 const navItems = [
   { href: "/", label: "Dashboard", icon: LayoutDashboard },
@@ -17,6 +20,7 @@ const navItems = [
 
 export function BottomNav() {
   const pathname = usePathname();
+  const { theme, toggleTheme } = useTheme();
 
   return (
     <nav className="fixed inset-x-0 bottom-0 z-40 border-t bg-background md:hidden">
@@ -44,6 +48,17 @@ export function BottomNav() {
             </Link>
           );
         })}
+        <button
+          onClick={toggleTheme}
+          className="flex flex-col items-center gap-0.5 px-3 py-1 text-xs text-muted-foreground transition-colors"
+        >
+          {theme === "dark" ? (
+            <Sun className="size-5" />
+          ) : (
+            <Moon className="size-5" />
+          )}
+          <span>{theme === "dark" ? "Light" : "Dark"}</span>
+        </button>
       </div>
     </nav>
   );
