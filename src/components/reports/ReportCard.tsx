@@ -35,7 +35,13 @@ export function ReportCard({ report }: ReportCardProps) {
           <div className="flex items-center justify-between text-xs text-muted-foreground">
             <span>{formatBytes(report.size)}</span>
             <span>
-              {new Date(report.modified).toLocaleDateString()}
+              {new Date(report.modified).toLocaleString(undefined, {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+              })}
             </span>
           </div>
         </CardContent>

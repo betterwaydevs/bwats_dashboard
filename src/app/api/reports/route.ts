@@ -46,6 +46,8 @@ export async function GET() {
       }
     }
 
+    reports.sort((a, b) => new Date(b.modified).getTime() - new Date(a.modified).getTime());
+
     return NextResponse.json(reports);
   } catch (error) {
     console.error("Failed to list reports:", error);
