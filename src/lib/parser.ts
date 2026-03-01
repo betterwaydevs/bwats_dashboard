@@ -16,11 +16,13 @@ import type {
 
 const SECTION_PRIORITY_MAP: Record<string, Priority> = {
   "Active / High Priority": "high",
+  "Dev-Complete": "dev-complete",
   "Medium Priority": "medium",
   "Low Priority / Future": "low",
   "Quick Fixes (< 15 min each)": "quick-fix",
   "Delegated to Intern": "intern",
   "Completed": "completed",
+  "Done": "completed",
 };
 
 interface ColumnSchema {
@@ -127,8 +129,14 @@ export function parseBacklog(): BacklogTask[] {
     // Detect section headers
     if (line.startsWith("## ")) {
       const sectionName = line.replace("## ", "").trim();
-      if (SECTION_PRIORITY_MAP[sectionName]) {
-        currentPriority = SECTION_PRIORITY_MAP[sectionName];
+      // Try exact match first, then startsWith for headers with parenthetical suffixes
+      const matchedKey = SECTION_PRIORITY_MAP[sectionName]
+        ? sectionName
+        : Object.keys(SECTION_PRIORITY_MAP).find((key) =>
+            sectionName.startsWith(key)
+          );
+      if (matchedKey) {
+        currentPriority = SECTION_PRIORITY_MAP[matchedKey];
         currentSchema = null;
         headerSeen = false;
       }

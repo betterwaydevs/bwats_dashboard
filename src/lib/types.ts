@@ -1,8 +1,8 @@
-export type TaskStatus = "pending" | "in-progress" | "blocked" | "done" | "not started";
+export type TaskStatus = "pending" | "in-progress" | "blocked" | "done" | "dev-complete" | "not started";
 
 export type TaskType = "BACK" | "FRONT" | "BOTH" | "EXT" | "TEST" | "FRONT/INFRA";
 
-export type Priority = "high" | "medium" | "low" | "quick-fix" | "intern" | "completed";
+export type Priority = "high" | "medium" | "low" | "quick-fix" | "intern" | "dev-complete" | "completed";
 
 export interface BacklogTask {
   id: string;

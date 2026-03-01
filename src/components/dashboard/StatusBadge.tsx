@@ -8,6 +8,8 @@ const statusColors: Record<string, string> = {
   pending:
     "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400",
   blocked: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400",
+  "dev-complete":
+    "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400",
   "not started":
     "bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400",
 };
