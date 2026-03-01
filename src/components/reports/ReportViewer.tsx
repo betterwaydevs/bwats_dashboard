@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useTheme } from "@/components/layout/ThemeProvider";
 
 interface ReportViewerProps {
   path: string;
@@ -9,6 +10,32 @@ interface ReportViewerProps {
 
 export function ReportViewer({ path }: ReportViewerProps) {
   const [isLoading, setIsLoading] = useState(true);
+  const iframeRef = useRef<HTMLIFrameElement>(null);
+  const { theme } = useTheme();
+
+  // Sync dashboard theme to iframe
+  useEffect(() => {
+    const iframe = iframeRef.current;
+    if (!iframe) return;
+
+    const applyTheme = () => {
+      try {
+        const doc = iframe.contentDocument;
+        if (doc?.documentElement) {
+          doc.documentElement.classList.toggle("dark", theme === "dark");
+        }
+      } catch {
+        // Cross-origin or not loaded yet
+      }
+    };
+
+    // Apply on theme change
+    applyTheme();
+
+    // Also apply when iframe loads
+    iframe.addEventListener("load", applyTheme);
+    return () => iframe.removeEventListener("load", applyTheme);
+  }, [theme, isLoading]);
 
   return (
     <div className="relative h-[calc(100vh-10rem)] w-full">
@@ -23,6 +50,7 @@ export function ReportViewer({ path }: ReportViewerProps) {
         </div>
       )}
       <iframe
+        ref={iframeRef}
         src={`/api/reports/${path}`}
         className="h-full w-full rounded-md border"
         sandbox="allow-same-origin allow-scripts"

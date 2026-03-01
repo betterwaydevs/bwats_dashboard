@@ -55,77 +55,78 @@ export async function GET(
       let html = content.toString("utf-8");
       const injectCSS = `<style>
 /* Dashboard theme override - injected at serve time */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #1a1b1e !important;
-    --fg: #e4e4e7 !important;
-    --card: #27272a !important;
-    --border: #3f3f46 !important;
-    --muted: #a1a1aa !important;
-    --code-bg: #2d2d30 !important;
-    --table-stripe: #27272a !important;
-    --shadow: 0 1px 3px rgba(0,0,0,0.3) !important;
-  }
-  body {
-    background: #1a1b1e !important;
-    color: #e4e4e7 !important;
-  }
-  h1, h2, h3, h4, h5, h6 {
-    color: #f4f4f5 !important;
-  }
-  table, th, td {
-    border-color: #3f3f46 !important;
-  }
-  th {
-    background: #27272a !important;
-    color: #e4e4e7 !important;
-  }
-  tr:nth-child(even) {
-    background: #27272a !important;
-  }
-  tr:hover {
-    background: #3f3f46 !important;
-  }
-  a { color: #60a5fa !important; }
-  section, div.card, .summary-card, article {
-    background: #27272a !important;
-    border-color: #3f3f46 !important;
-  }
-  pre, code {
-    background: #2d2d30 !important;
-  }
-  /* Override common inline light styles */
-  [style*="background: #fff"],
-  [style*="background: #ffffff"],
-  [style*="background: white"],
-  [style*="background:#fff"],
-  [style*="background:#ffffff"] {
-    background: #27272a !important;
-  }
-  [style*="background: #f9fafb"],
-  [style*="background: #f5f6fa"],
-  [style*="background:#f9fafb"],
-  [style*="background: #f0f0f0"],
-  [style*="background: #f3f4f6"] {
-    background: #27272a !important;
-  }
-  [style*="color: #1f2937"],
-  [style*="color: #1a1a2e"],
-  [style*="color:#1f2937"] {
-    color: #e4e4e7 !important;
-  }
-  /* Keep pass/fail badge text readable */
-  .badge, [class*="badge"], [class*="status"] {
-    filter: brightness(1.1);
-  }
-  /* Colored section overrides for verdict boxes */
-  [style*="background: #f0fdf4"] { background: #14532d !important; }
-  [style*="background: #fef2f2"] { background: #450a0a !important; }
-  [style*="background: #fffbeb"] { background: #451a03 !important; }
-  [style*="background: #f0f9ff"] { background: #0c2d48 !important; }
-  [style*="border-color: #bbf7d0"] { border-color: #166534 !important; }
-  [style*="border-color: #fecaca"] { border-color: #991b1b !important; }
+/* Light mode: no overrides needed, reports' original CSS handles it */
+
+/* Dark mode: activated via html.dark class toggled by dashboard */
+html.dark :root {
+  --bg: #1a1b1e !important;
+  --fg: #e4e4e7 !important;
+  --card: #27272a !important;
+  --border: #3f3f46 !important;
+  --muted: #a1a1aa !important;
+  --code-bg: #2d2d30 !important;
+  --table-stripe: #27272a !important;
+  --shadow: 0 1px 3px rgba(0,0,0,0.3) !important;
 }
+html.dark body {
+  background: #1a1b1e !important;
+  color: #e4e4e7 !important;
+}
+html.dark h1, html.dark h2, html.dark h3, html.dark h4, html.dark h5, html.dark h6 {
+  color: #f4f4f5 !important;
+}
+html.dark table, html.dark th, html.dark td {
+  border-color: #3f3f46 !important;
+}
+html.dark th {
+  background: #27272a !important;
+  color: #e4e4e7 !important;
+}
+html.dark tr:nth-child(even) {
+  background: #27272a !important;
+}
+html.dark tr:hover {
+  background: #3f3f46 !important;
+}
+html.dark a { color: #60a5fa !important; }
+html.dark section, html.dark div.card, html.dark .summary-card, html.dark article {
+  background: #27272a !important;
+  border-color: #3f3f46 !important;
+}
+html.dark pre, html.dark code {
+  background: #2d2d30 !important;
+}
+/* Override common inline light styles */
+html.dark [style*="background: #fff"],
+html.dark [style*="background: #ffffff"],
+html.dark [style*="background: white"],
+html.dark [style*="background:#fff"],
+html.dark [style*="background:#ffffff"] {
+  background: #27272a !important;
+}
+html.dark [style*="background: #f9fafb"],
+html.dark [style*="background: #f5f6fa"],
+html.dark [style*="background:#f9fafb"],
+html.dark [style*="background: #f0f0f0"],
+html.dark [style*="background: #f3f4f6"] {
+  background: #27272a !important;
+}
+html.dark [style*="color: #1f2937"],
+html.dark [style*="color: #1a1a2e"],
+html.dark [style*="color:#1f2937"] {
+  color: #e4e4e7 !important;
+}
+/* Keep pass/fail badge text readable */
+html.dark .badge, html.dark [class*="badge"], html.dark [class*="status"] {
+  filter: brightness(1.1);
+}
+/* Colored section overrides for verdict boxes */
+html.dark [style*="background: #f0fdf4"] { background: #14532d !important; }
+html.dark [style*="background: #fef2f2"] { background: #450a0a !important; }
+html.dark [style*="background: #fffbeb"] { background: #451a03 !important; }
+html.dark [style*="background: #f0f9ff"] { background: #0c2d48 !important; }
+html.dark [style*="border-color: #bbf7d0"] { border-color: #166534 !important; }
+html.dark [style*="border-color: #fecaca"] { border-color: #991b1b !important; }
 
 /* Mobile responsive */
 @media (max-width: 768px) {
