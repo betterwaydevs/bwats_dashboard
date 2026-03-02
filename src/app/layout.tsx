@@ -3,7 +3,6 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Sidebar } from "@/components/layout/Sidebar";
-import { MobileHeader } from "@/components/layout/MobileHeader";
 import { BottomNav } from "@/components/layout/BottomNav";
 import { ThemeProvider } from "@/components/layout/ThemeProvider";
 import "./globals.css";
@@ -38,8 +37,7 @@ export default function RootLayout({
       >
         <ThemeProvider>
           <TooltipProvider>
-            <div className="flex h-dvh flex-col md:flex-row">
-              <MobileHeader />
+            <div className="flex h-dvh">
               <Sidebar />
               <main className="flex-1 overflow-auto pb-16 md:pb-0">
                 {children}
