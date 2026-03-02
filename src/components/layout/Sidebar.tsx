@@ -75,21 +75,18 @@ export function Sidebar() {
           <Image
             src="/BW_DEVS_AI_TEAM_LOGO.png"
             alt="BW Devs Team"
-            width={32}
-            height={32}
-            className="shrink-0"
+            width={1042}
+            height={253}
+            className="shrink-0 w-8 h-auto"
           />
         ) : (
-          <div className="flex items-center gap-2">
-            <Image
-              src="/BW_DEVS_AI_TEAM_LOGO.png"
-              alt="BW Devs Team"
-              width={32}
-              height={32}
-              className="shrink-0"
-            />
-            <span className="text-lg font-bold tracking-tight">BWATS</span>
-          </div>
+          <Image
+            src="/BW_DEVS_AI_TEAM_LOGO.png"
+            alt="BW Devs Team"
+            width={1042}
+            height={253}
+            className="shrink-0 h-8 w-auto"
+          />
         )}
         <Button
           variant="ghost"

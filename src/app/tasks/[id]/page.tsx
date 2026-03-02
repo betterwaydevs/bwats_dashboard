@@ -134,28 +134,28 @@ export default function TaskDetailPage({
               )}
             </TabsContent>
 
-            <TabsContent value="chat" forceMount className={cn("mt-4", "data-[state=inactive]:hidden")}>
+            <TabsContent value="chat" className="mt-4">
               <Tabs defaultValue="chat-po">
                 <TabsList>
                   <TabsTrigger value="chat-po">PO</TabsTrigger>
                   <TabsTrigger value="chat-pm">PM</TabsTrigger>
                 </TabsList>
-                <TabsContent value="chat-po" forceMount className={cn("mt-2", "data-[state=inactive]:hidden")}>
+                <TabsContent value="chat-po" className="mt-2">
                   <ChatInterface
                     agent="product-owner"
                     fixedContext={[id]}
                     suggestedPrompts={["Review this spec", "Suggest edge cases", "Summarize delivery status", "Improve acceptance criteria"]}
                     placeholder={`Ask the PO about ${id}...`}
-                    heightClass="h-[calc(100vh-22rem)]"
+                    heightClass="h-64 md:h-[calc(100dvh-22rem)]"
                   />
                 </TabsContent>
-                <TabsContent value="chat-pm" forceMount className={cn("mt-2", "data-[state=inactive]:hidden")}>
+                <TabsContent value="chat-pm" className="mt-2">
                   <ChatInterface
                     agent="project-manager"
                     fixedContext={[id]}
                     suggestedPrompts={["What's the status?", "Break into subtasks", "Who should work on this?", "What are the blockers?"]}
                     placeholder={`Ask the PM about ${id}...`}
-                    heightClass="h-[calc(100vh-22rem)]"
+                    heightClass="h-64 md:h-[calc(100dvh-22rem)]"
                   />
                 </TabsContent>
               </Tabs>

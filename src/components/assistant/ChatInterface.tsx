@@ -32,7 +32,7 @@ export function ChatInterface({
   placeholder,
   emptyStateMessage,
   systemInstruction,
-  heightClass = "h-[calc(100vh-10rem)]",
+  heightClass = "h-[calc(100dvh-14rem)] md:h-[calc(100dvh-10rem)]",
   agent,
 }: ChatInterfaceProps) {
   const [messages, setMessages] = useState<ChatMessageType[]>([]);
@@ -43,6 +43,7 @@ export function ChatInterface({
     { id: string; title: string }[]
   >([]);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLDivElement>(null);
 
   const effectiveContext = fixedContext ?? selectedContext;
   const prompts = suggestedPrompts ?? DEFAULT_PROMPTS;
@@ -74,10 +75,18 @@ export function ChatInterface({
     fetchSpecs();
   }, [fixedContext]);
 
-  // Auto-scroll to bottom
+  // Auto-scroll to bottom of messages
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
+
+  // Scroll input into view on mount (ensures it's visible above mobile BottomNav)
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      inputRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }, 100);
+    return () => clearTimeout(timer);
+  }, []);
 
   const sendMessage = useCallback(
     async (text: string) => {
@@ -232,7 +241,7 @@ export function ChatInterface({
       </ScrollArea>
 
       {/* Input area */}
-      <div className="flex items-end gap-2">
+      <div ref={inputRef} className="relative z-50 flex items-end gap-2 bg-background pb-4 md:pb-0">
         <Textarea
           value={input}
           onChange={(e) => setInput(e.target.value)}
