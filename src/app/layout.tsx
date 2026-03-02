@@ -20,6 +20,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "BWATS Dashboard",
   description: "Task management dashboard for BWATS multi-project system",
+  icons: {
+    icon: "/favicon.ico",
+  },
 };
 
 export default function RootLayout({

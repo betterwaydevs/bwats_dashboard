@@ -12,10 +12,12 @@ import { SpecViewer } from "@/components/task-detail/SpecViewer";
 import { ProgressTimeline } from "@/components/task-detail/ProgressTimeline";
 import { ChecklistProgress } from "@/components/task-detail/ChecklistProgress";
 import { DeliveryPipeline } from "@/components/task-detail/DeliveryPipeline";
+import { ChatInterface } from "@/components/assistant/ChatInterface";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Pencil } from "lucide-react";
+import { Pencil, MessageSquare } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export default function TaskDetailPage({
   params,
@@ -96,10 +98,13 @@ export default function TaskDetailPage({
                 Progress
                 {progress && ` (${progress.sessions.length})`}
               </TabsTrigger>
+              <TabsTrigger value="chat">
+                <MessageSquare className="h-4 w-4" /> Chat
+              </TabsTrigger>
             </TabsList>
 
             {delivery && (
-              <TabsContent value="delivery" className="mt-4">
+              <TabsContent value="delivery" forceMount className={cn("mt-4", "data-[state=inactive]:hidden")}>
                 <DeliveryPipeline
                   taskId={id}
                   stages={delivery.stages}
@@ -109,7 +114,7 @@ export default function TaskDetailPage({
               </TabsContent>
             )}
 
-            <TabsContent value="spec" className="mt-4">
+            <TabsContent value="spec" forceMount className={cn("mt-4", "data-[state=inactive]:hidden")}>
               {spec ? (
                 <SpecViewer htmlContent={spec.htmlContent} />
               ) : (
@@ -119,7 +124,7 @@ export default function TaskDetailPage({
               )}
             </TabsContent>
 
-            <TabsContent value="progress" className="mt-4">
+            <TabsContent value="progress" forceMount className={cn("mt-4", "data-[state=inactive]:hidden")}>
               {progress ? (
                 <ProgressTimeline sessions={progress.sessions} />
               ) : (
@@ -127,6 +132,33 @@ export default function TaskDetailPage({
                   No progress log yet for {id}
                 </div>
               )}
+            </TabsContent>
+
+            <TabsContent value="chat" forceMount className={cn("mt-4", "data-[state=inactive]:hidden")}>
+              <Tabs defaultValue="chat-po">
+                <TabsList>
+                  <TabsTrigger value="chat-po">PO</TabsTrigger>
+                  <TabsTrigger value="chat-pm">PM</TabsTrigger>
+                </TabsList>
+                <TabsContent value="chat-po" forceMount className={cn("mt-2", "data-[state=inactive]:hidden")}>
+                  <ChatInterface
+                    agent="product-owner"
+                    fixedContext={[id]}
+                    suggestedPrompts={["Review this spec", "Suggest edge cases", "Summarize delivery status", "Improve acceptance criteria"]}
+                    placeholder={`Ask the PO about ${id}...`}
+                    heightClass="h-[calc(100vh-22rem)]"
+                  />
+                </TabsContent>
+                <TabsContent value="chat-pm" forceMount className={cn("mt-2", "data-[state=inactive]:hidden")}>
+                  <ChatInterface
+                    agent="project-manager"
+                    fixedContext={[id]}
+                    suggestedPrompts={["What's the status?", "Break into subtasks", "Who should work on this?", "What are the blockers?"]}
+                    placeholder={`Ask the PM about ${id}...`}
+                    heightClass="h-[calc(100vh-22rem)]"
+                  />
+                </TabsContent>
+              </Tabs>
             </TabsContent>
           </Tabs>
         </>

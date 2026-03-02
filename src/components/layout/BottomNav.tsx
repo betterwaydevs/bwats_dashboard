@@ -19,7 +19,7 @@ const navItems = [
   { href: "/reports", label: "Reports", icon: FileText },
   { href: "/agents", label: "Agents", icon: Users },
   { href: "/system", label: "System", icon: Brain },
-  { href: "/assistant", label: "Assistant", icon: MessageSquare },
+  { href: "/assistant", label: "Team", icon: MessageSquare },
 ];
 
 export function BottomNav() {

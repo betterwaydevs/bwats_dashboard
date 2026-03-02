@@ -11,6 +11,7 @@ import { TypeBadge } from "@/components/dashboard/TypeBadge";
 import { MiniPipeline } from "@/components/task-detail/DeliveryPipeline";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import {
   FileText,
@@ -20,6 +21,7 @@ import {
   ChevronRight,
   AlertCircle,
   ArrowLeft,
+  Plus,
 } from "lucide-react";
 import type { BacklogTask, DeliveryStage } from "@/lib/types";
 
@@ -265,7 +267,17 @@ function DashboardContent() {
 
   return (
     <div className="p-4 md:p-6 space-y-6">
-      <Header title="Dashboard" subtitle={`${tasks.length} tasks tracked`} />
+      <Header
+        title="Dashboard"
+        subtitle={`${tasks.length} tasks tracked`}
+        actions={
+          <Link href="/tasks/new">
+            <Button size="sm">
+              <Plus className="h-4 w-4" /> New Task
+            </Button>
+          </Link>
+        }
+      />
 
       {/* Filter tabs — visible on all screen sizes */}
       <div className="flex gap-2 overflow-x-auto pb-1">

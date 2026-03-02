@@ -26,5 +26,3 @@ export const PLAYWRIGHT_REPORT_DIR =
     "nearshore-talent-compass",
     "playwright-report"
   );
-
-export const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY || "";

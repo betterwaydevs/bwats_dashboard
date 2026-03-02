@@ -9,14 +9,32 @@ import { ChatMessage } from "@/components/assistant/ChatMessage";
 import { ContextSelector } from "@/components/assistant/ContextSelector";
 import type { ChatMessage as ChatMessageType } from "@/lib/types";
 
-const SUGGESTED_PROMPTS = [
+const DEFAULT_PROMPTS = [
   "Review this spec",
   "Identify edge cases",
   "Suggest test scenarios",
   "Break down into subtasks",
 ];
 
-export function ChatInterface() {
+interface ChatInterfaceProps {
+  fixedContext?: string[];
+  suggestedPrompts?: string[];
+  placeholder?: string;
+  emptyStateMessage?: string;
+  systemInstruction?: string;
+  heightClass?: string;
+  agent?: "product-owner" | "project-manager";
+}
+
+export function ChatInterface({
+  fixedContext,
+  suggestedPrompts,
+  placeholder,
+  emptyStateMessage,
+  systemInstruction,
+  heightClass = "h-[calc(100vh-10rem)]",
+  agent,
+}: ChatInterfaceProps) {
   const [messages, setMessages] = useState<ChatMessageType[]>([]);
   const [input, setInput] = useState("");
   const [selectedContext, setSelectedContext] = useState<string[]>([]);
@@ -24,19 +42,24 @@ export function ChatInterface() {
   const [availableSpecs, setAvailableSpecs] = useState<
     { id: string; title: string }[]
   >([]);
-  const scrollRef = useRef<HTMLDivElement>(null);
+  const bottomRef = useRef<HTMLDivElement>(null);
 
-  // Fetch available specs on mount
+  const effectiveContext = fixedContext ?? selectedContext;
+  const prompts = suggestedPrompts ?? DEFAULT_PROMPTS;
+
+  // Fetch available specs on mount (only when no fixedContext)
   useEffect(() => {
+    if (fixedContext) return;
     async function fetchSpecs() {
       try {
         const res = await fetch("/api/backlog");
         if (res.ok) {
           const data = await res.json();
           const tasks = data.tasks ?? data ?? [];
+          const pendingTasks = tasks.filter((t: { id: string; title: string; status?: string }) => t.status === "pending");
           const specs = Array.from(
             new Map(
-              tasks.map((t: { id: string; title: string }) => [
+              pendingTasks.map((t: { id: string; title: string }) => [
                 t.id,
                 { id: t.id, title: t.title },
               ])
@@ -49,13 +72,11 @@ export function ChatInterface() {
       }
     }
     fetchSpecs();
-  }, []);
+  }, [fixedContext]);
 
   // Auto-scroll to bottom
   useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-    }
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
   const sendMessage = useCallback(
@@ -74,7 +95,9 @@ export function ChatInterface() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             messages: updatedMessages,
-            context: selectedContext,
+            context: effectiveContext,
+            ...(systemInstruction && { systemInstruction }),
+            ...(agent && { agent }),
           }),
         });
 
@@ -151,7 +174,7 @@ export function ChatInterface() {
         setIsStreaming(false);
       }
     },
-    [messages, isStreaming, selectedContext]
+    [messages, isStreaming, effectiveContext, systemInstruction, agent]
   );
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -162,24 +185,26 @@ export function ChatInterface() {
   };
 
   return (
-    <div className="flex h-[calc(100vh-10rem)] flex-col gap-3">
-      {/* Context selector */}
-      <ContextSelector
-        selectedIds={selectedContext}
-        onChange={setSelectedContext}
-        availableSpecs={availableSpecs}
-      />
+    <div className={`flex ${heightClass} flex-col gap-3`}>
+      {/* Context selector — hidden when fixedContext is provided */}
+      {!fixedContext && (
+        <ContextSelector
+          selectedIds={selectedContext}
+          onChange={setSelectedContext}
+          availableSpecs={availableSpecs}
+        />
+      )}
 
       {/* Messages area */}
       <ScrollArea className="flex-1 rounded-md border">
-        <div ref={scrollRef} className="flex flex-col gap-3 p-4">
+        <div className="flex flex-col gap-3 p-4">
           {messages.length === 0 ? (
             <div className="flex flex-1 flex-col items-center justify-center gap-6 py-12">
               <p className="text-sm text-muted-foreground">
-                Start a conversation with the BWATS assistant
+                {emptyStateMessage ?? "Start a conversation with BW Devs PO"}
               </p>
               <div className="grid grid-cols-2 gap-2">
-                {SUGGESTED_PROMPTS.map((prompt) => (
+                {prompts.map((prompt) => (
                   <Button
                     key={prompt}
                     variant="outline"
@@ -202,6 +227,7 @@ export function ChatInterface() {
               Thinking...
             </div>
           )}
+          <div ref={bottomRef} />
         </div>
       </ScrollArea>
 
@@ -211,7 +237,7 @@ export function ChatInterface() {
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder="Ask about your specs, tasks, or project..."
+          placeholder={placeholder ?? "Ask about your specs, tasks, or project..."}
           className="min-h-10 resize-none"
           rows={1}
           disabled={isStreaming}

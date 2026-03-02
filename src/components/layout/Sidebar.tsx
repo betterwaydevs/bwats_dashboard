@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import Image from "next/image";
 import {
   LayoutDashboard,
   FileText,
@@ -27,7 +28,7 @@ const navItems = [
   { href: "/reports", label: "Reports", icon: FileText },
   { href: "/agents", label: "Agents", icon: Users },
   { href: "/system", label: "System", icon: Brain },
-  { href: "/assistant", label: "Assistant", icon: MessageSquare },
+  { href: "/assistant", label: "BW Devs Team", icon: MessageSquare },
 ];
 
 const dashboardSubItems = [
@@ -70,9 +71,26 @@ export function Sidebar() {
       )}
     >
       <div className="flex h-14 items-center justify-between border-b px-4">
-        <span className="text-lg font-bold tracking-tight">
-          B{!collapsed && "WATS"}
-        </span>
+        {collapsed ? (
+          <Image
+            src="/BW_DEVS_AI_TEAM_LOGO.png"
+            alt="BW Devs Team"
+            width={32}
+            height={32}
+            className="shrink-0"
+          />
+        ) : (
+          <div className="flex items-center gap-2">
+            <Image
+              src="/BW_DEVS_AI_TEAM_LOGO.png"
+              alt="BW Devs Team"
+              width={32}
+              height={32}
+              className="shrink-0"
+            />
+            <span className="text-lg font-bold tracking-tight">BWATS</span>
+          </div>
+        )}
         <Button
           variant="ghost"
           size="icon"
