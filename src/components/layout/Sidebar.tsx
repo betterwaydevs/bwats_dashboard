@@ -15,6 +15,8 @@ import {
   PackageCheck,
   CheckCircle2,
   Circle,
+  Brain,
+  Users,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useTheme } from "@/components/layout/ThemeProvider";
@@ -23,6 +25,8 @@ import { Button } from "@/components/ui/button";
 const navItems = [
   { href: "/", label: "Dashboard", icon: LayoutDashboard },
   { href: "/reports", label: "Reports", icon: FileText },
+  { href: "/agents", label: "Agents", icon: Users },
+  { href: "/system", label: "System", icon: Brain },
   { href: "/assistant", label: "Assistant", icon: MessageSquare },
 ];
 

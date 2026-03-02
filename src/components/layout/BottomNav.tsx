@@ -8,6 +8,8 @@ import {
   MessageSquare,
   Moon,
   Sun,
+  Brain,
+  Users,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useTheme } from "@/components/layout/ThemeProvider";
@@ -15,6 +17,8 @@ import { useTheme } from "@/components/layout/ThemeProvider";
 const navItems = [
   { href: "/", label: "Dashboard", icon: LayoutDashboard },
   { href: "/reports", label: "Reports", icon: FileText },
+  { href: "/agents", label: "Agents", icon: Users },
+  { href: "/system", label: "System", icon: Brain },
   { href: "/assistant", label: "Assistant", icon: MessageSquare },
 ];
 

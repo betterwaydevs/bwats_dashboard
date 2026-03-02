@@ -6,7 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { ListTodo, Clock, Loader2, CheckCircle2 } from "lucide-react";
+import { ListTodo, Clock, Loader2, CheckCircle2, PackageCheck } from "lucide-react";
 import type { BacklogTask } from "@/lib/types";
 
 interface StatsBarProps {
@@ -19,6 +19,7 @@ export function StatsBar({ tasks }: StatsBarProps) {
     (t) => t.status === "pending" || t.status === "not started"
   ).length;
   const inProgress = tasks.filter((t) => t.status === "in-progress").length;
+  const devComplete = tasks.filter((t) => t.status === "dev-complete").length;
   const done = tasks.filter((t) => t.status === "done").length;
 
   const stats = [
@@ -41,6 +42,12 @@ export function StatsBar({ tasks }: StatsBarProps) {
       color: "text-blue-600 dark:text-blue-400",
     },
     {
+      label: "Dev-Complete",
+      value: devComplete,
+      icon: PackageCheck,
+      color: "text-orange-600 dark:text-orange-400",
+    },
+    {
       label: "Done",
       value: done,
       icon: CheckCircle2,
@@ -49,7 +56,7 @@ export function StatsBar({ tasks }: StatsBarProps) {
   ];
 
   return (
-    <div className="grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-4">
+    <div className="grid grid-cols-2 gap-3 md:grid-cols-5 md:gap-4">
       {stats.map((stat) => (
         <Card key={stat.label} className="py-4">
           <CardHeader className="flex flex-row items-center justify-between pb-1 px-4">
