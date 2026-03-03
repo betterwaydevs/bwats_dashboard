@@ -51,6 +51,7 @@ export interface ReportFile {
   taskId: string;
   filename: string;
   title: string;
+  taskTitle?: string;
   size: number;
   modified: string;
   path: string;
@@ -58,6 +59,8 @@ export interface ReportFile {
 
 export interface ScreenshotFile {
   filename: string;
+  taskId?: string;
+  taskTitle?: string;
   url: string;
   modified: string;
 }

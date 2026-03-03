@@ -26,9 +26,16 @@ export function ReportCard({ report }: ReportCardProps) {
       <Card className="transition-colors hover:bg-accent/50">
         <CardHeader className="flex flex-row items-center gap-3 px-4 pb-2">
           <FileText className="size-8 shrink-0 text-muted-foreground" />
-          <CardTitle className="text-sm leading-snug line-clamp-2">
-            <span className="text-muted-foreground">{report.taskId}</span>{" "}
-            {report.title}
+          <CardTitle className="leading-snug">
+            <div>
+              <div className="text-xs font-mono text-muted-foreground mb-0.5">{report.taskId}</div>
+              <div className="text-sm font-semibold line-clamp-2">
+                {report.taskTitle ?? report.title}
+              </div>
+              {report.taskTitle && (
+                <div className="text-xs text-muted-foreground mt-0.5 line-clamp-1">{report.title}</div>
+              )}
+            </div>
           </CardTitle>
         </CardHeader>
         <CardContent className="px-4 pt-0">

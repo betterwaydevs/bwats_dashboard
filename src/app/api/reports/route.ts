@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
 import { REPORTS_DIR } from "@/lib/config";
+import { parseBacklog } from "@/lib/parser";
 import type { ReportFile } from "@/lib/types";
 
 function humanizeFilename(filename: string): string {
@@ -18,6 +19,16 @@ export async function GET() {
     }
 
     const reports: ReportFile[] = [];
+
+    let taskTitleMap: Record<string, string> = {};
+    try {
+      const backlogTasks = parseBacklog();
+      for (const t of backlogTasks) {
+        taskTitleMap[t.id] = t.title;
+      }
+    } catch {
+      // backlog unavailable, skip
+    }
 
     // Each subdirectory is a task ID
     const entries = fs.readdirSync(REPORTS_DIR, { withFileTypes: true });
@@ -39,6 +50,7 @@ export async function GET() {
           taskId,
           filename,
           title: humanizeFilename(filename),
+          taskTitle: taskTitleMap[taskId],
           size: stat.size,
           modified: stat.mtime.toISOString(),
           path: `${taskId}/${filename}`,
